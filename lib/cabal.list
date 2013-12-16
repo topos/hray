@@ -1,0 +1,13 @@
+#cabal-install-1.18.0.2
+distributed-process-0.4.2
+network-transport-tcp-0.3.1
+lens-3.10
+distributed-process-simplelocalnet-0.2.0.9
+#persistent-postgresql-1.2.1
+# for later
+#repa-3.2.3.3
+#repa-io-3.2.3.2
+#repa-algorithms-3.2.4.1
+#repa-plugin-1.0.0.1
+#repa-devil-0.3.2.2
+#repa-examples-3.2.3.2

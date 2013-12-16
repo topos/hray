@@ -1,0 +1,26 @@
+Default: &defaults
+  user: klas
+  password: mbp2ubun2
+  database: klas_development
+  host: localhost
+  port: 5432
+  poolsize: 10
+
+Development:
+  <<: *defaults
+
+Testing:
+  database: klas_testing
+  <<: *defaults
+
+Staging:
+  database: klas_staging
+  host: staging_host
+  poolsize: 100
+  <<: *defaults
+
+Production:
+  database: klas_production
+  host: production_host
+  poolsize: 100
+  <<: *defaults

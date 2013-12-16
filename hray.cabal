@@ -1,0 +1,23 @@
+Name:                hray
+Version:             0.1
+Synopsis:            a restful interfact to haskell cloud actors
+Description:         a restful interfact to haskell cloud actors in the spirit of Scala Spray
+Category:            Net
+License:             GPL-2
+License-file:        LICENSE
+Build-Type:          Simple
+Cabal-version:       >= 1.18
+Author:              M. Lee
+Maintainer:          slacket@gmail.com
+
+Library
+  Build-Depends:     distributed-process >= 0.4.2,
+                     network-transport-tcp >= 0.3.1,
+                     binary >= 0.7.1.0,
+                     lens- >= 3.10
+  Hs-Source-Dirs:    src
+  Exposed-modules:   
+
+source-repository head
+  type:              git
+  location:          git://github.com/statusfailed/attoparsec-arff.git
