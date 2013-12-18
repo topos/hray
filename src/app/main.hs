@@ -15,7 +15,7 @@ main = do
       "queue" -> Queue.start
       "server" -> Queue.server
       "client" -> Queue.client
-    _ -> printUsage
+      _ -> printUsage
   else
     printUsage
 
