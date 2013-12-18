@@ -1,6 +1,7 @@
 namespace :cabal do
     desc "install cabal-sandbox packages"
     task :install, [:cabal] => [:init] do |t,arg|
+        arg.with_defaults(opts: '')
         pkgs = `rake cabal:list`.split("\n").map{|l|l.strip.split.join('-')}
         Dir.chdir(PROJ_DIR) do
             pkg_list = []
@@ -17,7 +18,7 @@ namespace :cabal do
                 pkg_list.each do |pkg|
                     next if pkg.start_with?("yesod-bin-") && File.exists?("#{CABAL_SANDBOX_DIR}/bin/yesod")
                     if platform?('linux')
-                        sh "cabal install #{pkg}"
+                        sh "cabal install --extra-include-dirs=#{OPT_DIR}/zmq/include --extra-lib-dirs=#{OPT_DIR}/zmq/lib #{pkg}"
                     elsif platform?('darwin')
                         sh "cabal install --extra-include-dirs=#{EXTRA_INC} --extra-lib-dirs=#{EXTRA_LIB} #{pkg}"
                     else

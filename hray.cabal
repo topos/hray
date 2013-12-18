@@ -13,8 +13,8 @@ Maintainer:          slacket@gmail.com
 Library
   Build-Depends:     distributed-process >= 0.4.2,
                      network-transport-tcp >= 0.3.1,
-                     binary >= 0.7.1.0,
-                     lens- >= 3.10
+                     binary >= 0.5.1,
+                     lens >= 3.10
   Hs-Source-Dirs:    src
   Exposed-modules:   
 

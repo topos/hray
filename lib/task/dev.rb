@@ -36,15 +36,12 @@ SRC_DIR = proj_dir('src')
 ETC_DIR = proj_dir('etc')
 LIB_DIR = proj_dir('lib')
 TASK_DIR = proj_dir('lib/task')
+OPT_DIR = proj_dir('opt')
 SANDBOX_DIR = proj_dir('.cabal-sandbox')
 PROJ_HOME = PROJ_DIR
 
 GHC_PACKAGE_PATH = "#{PROJ_DIR}/.cabal-sandbox/x86_64-linux-ghc-7.6.3-packages.conf.d"
-EXTRA_INC, EXTRA_LIB = if platform?('darwin')
-                         ['/opt/local/include','/opt/local/lib']
-                       else
-                         ['','']
-                       end
+EXTRA_INC, EXTRA_LIB = ['#{OPT_DIR}/zmq/include',"-L#{OPT_DIR}/zmq/lib -lzmq"]
 CABAL_SANDBOX_DIR = "#{PROJ_DIR}/.cabal-sandbox"
 GHC = "ghc -no-user-package-db -package-db #{GHC_PACKAGE_PATH} -threaded"
 
