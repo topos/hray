@@ -1,8 +1,23 @@
 module Main where
 
-import Text.Printf(printf)
-import Actor.Cluster as Cluster
-import Actor.Gossima as Gossima
+import System.Environment
+import Text.Printf (printf)
+import Control.Lens ((^.))
+import qualified Zmq.Queue as Queue
+import qualified Actor.Gossima as Gossima
+import Arg (args,help,usage,role)
 
 main :: IO ()
-main = Gossima.run
+main = do
+  args <- args
+  if not (args^.help) then
+    case args^.role of
+      "queue" -> Queue.start
+      "server" -> Queue.server
+      "client" -> Queue.client
+      _ -> do
+        usage <- usage
+        putStrLn usage
+  else do
+    usage <- usage
+    putStrLn usage

@@ -12,8 +12,8 @@ master backend slaves = do
   -- terminate the slaves when the master terminates (this is optional)
   terminateAllSlaves backend
 
-run :: IO ()
-run = do
+defaultMain :: IO ()
+defaultMain = do
   args <- getArgs
   case args of
     ["master", host, port] -> do

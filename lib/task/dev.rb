@@ -41,8 +41,10 @@ SANDBOX_DIR = proj_dir('.cabal-sandbox')
 PROJ_HOME = PROJ_DIR
 
 GHC_PACKAGE_PATH = "#{PROJ_DIR}/.cabal-sandbox/x86_64-linux-ghc-7.6.3-packages.conf.d"
-EXTRA_INC, EXTRA_LIB = ['#{OPT_DIR}/zmq/include',"-L#{OPT_DIR}/zmq/lib -lzmq"]
 CABAL_SANDBOX_DIR = "#{PROJ_DIR}/.cabal-sandbox"
+EXTRA_INC_DIR = "#{OPT_DIR}/zmq/include"
+EXTRA_LIB_DIR = "#{OPT_DIR}/zmq/lib"
+EXTRA_INC, EXTRA_LIB = ['#{EXTRA_INC_DIR}',"-L#{EXTRA_LIB_DIR} -lzmq"]
 GHC = "ghc -no-user-package-db -package-db #{GHC_PACKAGE_PATH} -threaded"
 
 _path = []

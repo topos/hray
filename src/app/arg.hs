@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arg (args,host,port,help,usage) where
+module Arg (args,role,host,port,help,usage,Options(..)) where
 
 import System.Console.GetOpt
 import System.Environment (getArgs,getProgName)
@@ -20,6 +20,9 @@ options :: [OptDescr (Options -> Options)]
 options = [Option ['h'] ["host"]
            (ReqArg (\h opts -> opts{_host=h}) "host")
            "host"
+          ,Option ['r'] ["role"]
+           (ReqArg (\r opts -> opts{_role=r}) "role")
+           "role"
           ,Option ['p'] ["port"]
            (ReqArg (\p opts -> opts{_port=(read p)}) "port")
            "port"
@@ -37,7 +40,7 @@ args = do
     (opts, [], []) -> return (foldl (flip id) defaultOptions opts)
     (_, _, errs) -> do
       usage' <- usage
-      ioError (userError (concat errs ++ usage'))
+      ioError (userError $ concat errs ++ usage')
 
 usage :: IO String
 usage = do
