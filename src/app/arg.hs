@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arg (args,role,host,port,help,usage,Options(..)) where
+module Arg (args,role,host,port,help,usage,printUsage,Options(..)) where
 
 import System.Console.GetOpt
 import System.Environment (getArgs,getProgName)
@@ -47,3 +47,8 @@ usage = do
   cmd' <- cmd
   let header = "usage: " ++ cmd' ++ " [options...]"
   return $ usageInfo header options
+
+printUsage :: IO ()
+printUsage = do
+  usage <- usage
+  putStr usage

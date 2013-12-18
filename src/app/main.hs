@@ -5,7 +5,7 @@ import Text.Printf (printf)
 import Control.Lens ((^.))
 import qualified Zmq.Queue as Queue
 import qualified Actor.Gossima as Gossima
-import Arg (args,help,usage,role)
+import Arg (args,help,printUsage,role)
 
 main :: IO ()
 main = do
@@ -15,9 +15,7 @@ main = do
       "queue" -> Queue.start
       "server" -> Queue.server
       "client" -> Queue.client
-      _ -> do
-        usage <- usage
-        putStrLn usage
-  else do
-    usage <- usage
-    putStrLn usage
+    _ -> printUsage
+  else
+    printUsage
+
