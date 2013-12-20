@@ -1,12 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Zmq.Queue (start,server,client) where
+module Zmq.Queue (defaultMain) where
 
-import Control.Concurrent (threadDelay)
+import Control.Lens ((^.))
 import Control.Monad (forM_,forever)
+import Control.Concurrent (threadDelay)
 import Data.ByteString.Char8 (unpack)
 import Text.Printf
 import System.ZMQ4 (withContext,withSocket,bind,proxy,Dealer(..),Rep(..),Router(..))
-import System.ZMQ4.Monadic (runZMQ,socket,connect,send,receive,Req(..),liftIO)
+import System.ZMQ4.Monadic (connect,liftIO,receive,runZMQ,send,socket,Req(..))
+import Arg (args,help,printUsage,role)
 
 start :: IO ()
 start = withContext $ \ctx -> withSocket ctx Router $ \frontend -> withSocket ctx Dealer $ \backend -> do
@@ -36,5 +38,16 @@ server = do
     forever $ do
       receive responder >>= liftIO . printf "Received request: [%s]\n" . unpack
       -- Simulate doing some 'work' for 1 second
-      liftIO $ threadDelay (1 * 1000 * 1000)
+      liftIO $ threadDelay (500*1000)
       send responder [] "World"       
+
+defaultMain args = do
+  args <- args
+  if not (args^.help) then
+    case args^.role of
+      "queue" -> start
+      "server" -> server
+      "client" -> client
+      _ -> printUsage
+  else
+    printUsage

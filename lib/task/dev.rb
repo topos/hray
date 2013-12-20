@@ -31,6 +31,12 @@ def proj_mode
   ENV['PROJ_MODE'].nil? ? 'Development' : ENV['PROJ_MODE']
 end
 
+def terminal(cmd ='', opts ='', title ='')
+    raise "cmd is undefined" if cmd.nil?
+    title = "#{cmd} #{opts}" if title == ''
+    "gnome-terminal --title '#{title}' --execute sh -c '#{cmd} #{opts}'"
+end
+
 PROJ_DIR = File.expand_path("#{File.dirname(__FILE__)}/../../.")
 SRC_DIR = proj_dir('src')
 ETC_DIR = proj_dir('etc')
