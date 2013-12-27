@@ -180,7 +180,6 @@ namespace :dev do
     def make_all
         puts "- #{DateTime.now.strftime('%I:%M:%S')} (all)".yellow
         ghc_cmd = "#{GHC} --make #{FileList.new('**/*.hs').exclude('*Spec.hs').join(' ')} -o Main #{EXTRA_LIB} 2>&1" 
-        #puts ghc_cmd
         IO.popen(ghc_cmd) do |io|
             Process.wait(io.pid)
             putsh($? == 0, io.readlines.select{|l|l.size > 0})

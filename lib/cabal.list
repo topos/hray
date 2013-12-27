@@ -6,6 +6,10 @@ distributed-process-simplelocalnet-0.2.0.9
 MonadCatchIO-transformers-0.3.1.0
 exceptions-0.3.2
 semigroups-0.12.1
+hspec-1.8.1.1
+wai-2.0.0
+wai-extra-2.0.1.2
+warp-2.0.1
 #persistent-postgresql-1.2.1
 # for later
 #repa-3.2.3.3
