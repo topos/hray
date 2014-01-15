@@ -20,7 +20,7 @@ namespace :cabal do
                     if platform?('linux')
                         sh "cabal install --extra-include-dirs=#{OPT_DIR}/zmq/include --extra-lib-dirs=#{OPT_DIR}/zmq/lib #{pkg}"
                     elsif platform?('darwin')
-                        sh "cabal install --extra-include-dirs=#{EXTRA_INC} --extra-lib-dirs=#{EXTRA_LIB} #{pkg}"
+                        sh "cabal install #{pkg}"
                     else
                         raise "unrecognized platform"
                     end

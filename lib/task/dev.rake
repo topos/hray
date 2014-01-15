@@ -87,7 +87,7 @@ namespace :dev do
     end
     
     desc "init dev. env.: cabal-dev install"
-    task :init => [:gems] do
+    task :init => [:gems, 'zmq:install'] do
         task('cabal:init').invoke
     end
 

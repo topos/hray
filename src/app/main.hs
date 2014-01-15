@@ -7,5 +7,6 @@ import qualified Actor.Warp as W
 import Arg (args,help,printUsage,role)
 
 main :: IO ()
-main = W.defaultMain 
+--main = W.defaultMain 
+main = Q.defaultMain args
 
