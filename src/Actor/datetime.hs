@@ -18,7 +18,7 @@ start = do
 data Ping = Ping deriving (Typeable) -- serializable (= Binary + Typeable)
 
 instance Binary Ping where
-  put Ping = putWord8 "apple"
+  put Ping = putWord8 0
   get = do {getWord8; return Ping}
 
 server :: ReceivePort Ping -> Process ()
