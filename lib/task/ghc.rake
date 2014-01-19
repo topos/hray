@@ -5,15 +5,11 @@ namespace :ghc do
 
     desc "install ghc from source"
     task :install => [GHC_DIR] do
-        Dir.chdir(GHC_DIR) do
-            sh "sudo make install"
-        end
+        sh "cd #{GHC_DIR} && sudo make install"
     end
 
     task :build => [:pkgs, GHC_DIR] do
-        Dir.chdir(GHC_DIR) do
-            sh "make -j 8"
-        end
+        sh "cd #{GHC_DIR} && make -j 8"
     end
 
     task :pkgs do
@@ -21,12 +17,8 @@ namespace :ghc do
     end
 
     directory GHC_DIR => GHC_TAR do |t| 
-        Dir.chdir('/var/tmp') do
-            sh "tar xf #{GHC_TAR}"
-        end
-        Dir.chdir(GHC_DIR) do
-            sh "./configure --prefix=/opt/ghc CFLAGS=-O2"
-        end
+        sh "cd /var/tmp && tar xf #{GHC_TAR}"
+        sh "cd #{GHC_DIR} && ./configure --prefix=/opt/ghc CFLAGS=-O2"
     end
 
     file GHC_TAR do |t|
