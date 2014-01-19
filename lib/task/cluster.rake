@@ -5,15 +5,13 @@ namespace :cluster do
         Dir.chdir(SRC_DIR) do
             nodes.each do |n| 
                 role = n[:role]
-                n[:num_actors].times{|i|sh terminal("bundle exec rake run[--role=#{role}]",
-                                                    n[:role],
-                                                    "#{i}: #{n[:role]}")}
+                n[:num_actors].times{|i|sh terminal("bundle exec rake run[--role=#{role}]",n[:role],"#{i}: #{n[:role]}")}
             end
         end
     end
 
     desc "add an actor to the cluster started via rake cluster:start"
-    task :add, [:role,:num_actors]  do |t,arg|
+    task :add, [:role,:num_actors] do |t,arg|
         raise "arg.role is undefined" if arg.port.nil?
         sh "#{SRC_DIR}/Main slave localhost #{arg.port} &"
     end

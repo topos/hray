@@ -62,7 +62,7 @@ GHC = "ghc -no-user-package-db -package-db #{GHC_PACKAGE_PATH} -threaded"
 _path = []
 _path << "#{PROJ_DIR}/bin"
 _path << "#{PROJ_DIR}/.cabal-sandbox/bin"
-_path << (platform?('darwin') ? '~/Library/Haskell/bin' : '/opt/hp/bin')
+_path << (platform?('darwin') ? '~/Library/Haskell/bin' : '/opt/ghc/bin')
 _path << '/usr/local/bin'
 _path << '/opt/local/bin'
 _path << '/usr/bin'
