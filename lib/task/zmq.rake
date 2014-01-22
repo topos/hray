@@ -1,55 +1,33 @@
 namespace :zmq do
-    ZMQ_U = 'http://download.zeromq.org/zeromq-4.0.3.tar.gz'
-    ZMQ_F = ZMQ_U.split('/').last
-    ZMQ_D = ZMQ_F.split('.').first(ZMQ_F.split('.').size-2).join('.')
+    ZMQ_URL = 'http://download.zeromq.org/zeromq-4.0.3.tar.gz'
+    ZMQ_TAR = "/var/tmp/#{ZMQ_URL.split('/').last}"
+    ZMQ_DIR = ZMQ_TAR.split('.').first(ZMQ_TAR.split('.').size-2).join('.')
 
-    desc "start"
-    task :start do
-        Dir.chdir("#{OPT_DIR}/zmq/jetty") do
-            sh "java -Dzmq.zmq.home=docu -jar start.jar"
-        end
+    desc "install zmq from source"
+    task :install => [:build] do
+        sh "cd #{ZMQ_DIR} && sudo make install"
     end
 
-    directory OPT_DIR
-
-    desc "install zmq"
-    task :install => OPT_DIR do
-        sh "mkdir -p OPT_DIR" unless Dir.exists?(OPT_DIR)
-        Dir.chdir('./opt') do
-            task('zmq:init:install').invoke
-        end
-    end
-    
-    desc "clobber"
-    task :clobber do
-        Dir.chdir('opt') do
-            sh "rm -rf #{ZMQ_D} #{ZMQ_F}"
-        end
+    task :build => [:pkgs, ZMQ_DIR] do
+        sh "cd #{ZMQ_DIR} && make -j 8"
     end
 
-    task :info do
-        puts "src=#{ZMQ_U}"
+    task :pkgs do
+        sh "sudo apt-get install -y ncurses-dev"
     end
 
-    namespace :init do
-        file ZMQ_F do
-            sh "wget --output-document='#{ZMQ_U.split('/').last}' #{ZMQ_U}"
-        end
+    directory ZMQ_DIR => ZMQ_TAR do |t| 
+        sh "cd /var/tmp && tar xf #{ZMQ_TAR}"
+        sh "cd #{ZMQ_DIR} && ./configure --prefix=/opt/zmq CFLAGS=-O2"
+    end
 
-        directory ZMQ_D => ZMQ_F do
-            sh "tar xpf #{ZMQ_F}"
-        end
+    file ZMQ_TAR do |t|
+        sh "wget --output-document='#{ZMQ_TAR}' #{ZMQ_URL}"
+    end
 
-        task :default => :install
-
-        desc "install zmq"
-        task :install => ZMQ_D do
-            Dir.chdir(ZMQ_D) do
-                sh "./configure --prefix=/opt/zmq"
-                sh "make -j 4"
-                sh "sudo make install"
-            end
-            sh "rake zmq:clobber"
+    task :clean do
+        [ZMQ_TAR,ZMQ_DIR].each do |d|
+            sh "rm -rf #{d}"
         end
     end
 
