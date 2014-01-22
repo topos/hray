@@ -45,9 +45,9 @@ namespace :zmq do
         desc "install zmq"
         task :install => ZMQ_D do
             Dir.chdir(ZMQ_D) do
-                sh "./configure --prefix=#{OPT_DIR}/zmq"
+                sh "./configure --prefix=/opt/zmq"
                 sh "make -j 4"
-                sh "make install"
+                sh "sudo make install"
             end
             sh "rake zmq:clobber"
         end
