@@ -11,10 +11,10 @@ import qualified Data.ByteString.Char8 as C8 (pack,length)
 app :: Application
 app _ = return $ responseBuilder status200
                                  [(hContentType,C8.pack "text/plain"), 
-                                  (hContentLength,C8.pack $ show bodyLen), 
+                                  (hContentLength,C8.pack $ show bodyLen),
                                   (hConnection,C8.pack "keep-alive")]
                                  (fromByteString body)
-                 where body = C8.pack "Hello, World!"
+                 where body = C8.pack "Hi, There!"
                        bodyLen = C8.length body
 
 defaultMain :: IO ()
