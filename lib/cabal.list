@@ -1,15 +1,15 @@
 #cabal-install-1.18.0.2
 distributed-process-0.4.2
-network-transport-tcp-0.3.1
-lens-3.10
 distributed-process-simplelocalnet-0.2.0.9
+network-transport-tcp-0.3.1
+lens-3.10.1
 MonadCatchIO-transformers-0.3.1.0
-exceptions-0.3.2
-semigroups-0.12.1
+exceptions-0.3.3
+semigroups-0.12.2
 hspec-1.8.1.1
 wai-2.0.0
-wai-extra-2.0.1.2
-warp-2.0.1
+wai-extra-2.0.3
+warp-2.0.2
 #persistent-postgresql-1.2.1
 # for later
 #repa-3.2.3.3

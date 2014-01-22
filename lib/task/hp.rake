@@ -4,17 +4,18 @@ namespace :hp do
     HP_DIR = "/var/tmp/#{HP_URL.split('/').last.split('.tar').first}"
 
     desc "install hp from source"
-    task :install => [HP_DIR] do
-        Dir.chdir(HP_DIR) do
-            sh "sudo make install"
-        end
+    task :install => [:build] do
+        sh "cd #{HP_DIR} && sudo make install"
     end
 
     task :build => [:pkgs, HP_DIR] do
         sh "cd #{HP_DIR} && make -j 8"
     end
 
+    HP_PKGS = 'zlib1g-dev libgl1-mesa-dev libglc-dev freeglut3-dev libedit-dev libglw1-mesa libglw1-mesa-dev'
+
     task :pkgs do
+        sh "sudo apt-get install -y #{HP_PKGS}"
     end
 
     directory HP_DIR => HP_TAR do |t| 

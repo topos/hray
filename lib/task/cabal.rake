@@ -48,15 +48,15 @@ namespace :cabal do
     task :init do
         unless Dir.exists? "#{PROJ_DIR}/.cabal-sandbox"
             Dir.chdir(PROJ_DIR) do
+                sh "cabal install cabal-install"
                 sh "cabal update"
                 sh "cabal sandbox init"
             end
         end
     end
 
-    task :deps => :install_dependencies
+
     desc "install only dependencies"
-    task :install_deps => :install_dependencies
     task :install_dependencies do
         sh "cabal install --only-dependencies"
     end

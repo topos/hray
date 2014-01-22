@@ -4,7 +4,7 @@ namespace :ghc do
     GHC_DIR = "/var/tmp/#{GHC_URL.split('/').last.split('-src').first}"
 
     desc "install ghc from source"
-    task :install => [GHC_DIR] do
+    task :install => [:build] do
         sh "cd #{GHC_DIR} && sudo make install"
     end
 
@@ -13,7 +13,7 @@ namespace :ghc do
     end
 
     task :pkgs do
-        sh "sudo apt-get install ncurses-dev"
+        sh "sudo apt-get install -y ncurses-dev"
     end
 
     directory GHC_DIR => GHC_TAR do |t| 

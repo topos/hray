@@ -59,12 +59,13 @@ EXTRA_LIB_DIR = "#{OPT_DIR}/zmq/lib"
 EXTRA_INC, EXTRA_LIB = ['#{EXTRA_INC_DIR}',"-L#{EXTRA_LIB_DIR} -lzmq"]
 GHC = "ghc -no-user-package-db -package-db #{GHC_PACKAGE_PATH} -threaded"
 
+# ~/.cabal/bin is important since the new version of cabal will go there
 _path = []
 _path << "#{PROJ_DIR}/bin"
 _path << "#{PROJ_DIR}/.cabal-sandbox/bin"
+_path << "~/.cabal/bin"
 _path << (platform?('darwin') ? '~/Library/Haskell/bin' : '/opt/ghc/bin')
 _path << '/usr/local/bin'
-_path << '/opt/local/bin'
 _path << '/usr/bin'
 _path << '/bin'
 
