@@ -20,7 +20,7 @@ namespace :lxc do
         arg.with_defaults(stop:false)
         unless arg.stop
             gracetime = 10
-            sh "sudo lxc-shutdown -t #{gracetime} -n #{arg.name}"
+            sh "sudo lxc-stop --shutdown -t #{gracetime} -n #{arg.name}"
         else
             sh "sudo lxc-stop -n #{arg.name}"
         end
@@ -71,7 +71,7 @@ namespace :lxc do
         sh "sudo lxc-attach -n #{arg.name} -- #{arg.cmd}"
     end
 
-    desc "install packages"
+    desc "install packages".green
     task :install, [:name,:packages] do |t,arg|
         raise "error: lxc \"name\" is required" if arg.name.nil?
         task("lxc:exec").reenable
@@ -106,8 +106,7 @@ namespace :lxc do
     desc "ssh"
     task :ssh, [:name] do |t,arg|
         raise "error: lxc \"name\" is required" if arg.name.nil?
-        ip = `sudo lxc-ls --fancy|grep '#{arg.name}'|awk '{print $3}'`.strip
-        sh "ssh #{ip}"
+        sh "ssh #{lxc2ip(arg.name)}"
     end
 
     desc "configure an LXC so ssh doesn't require a password"
@@ -161,6 +160,7 @@ namespace :lxc do
                 sh " ~/.ssh/id_rsa.pub /var/tmp"
             end
         end
+        # share home with container
     end
 
     desc "give sudo access to a user on an lxc name"
@@ -185,14 +185,8 @@ namespace :lxc do
         end
     end
 
-    desc "initialize/install lxc"
-    task :init => [:install,:network_config]
-
-    desc "install lxc"
-    task :install do
-        sh "sudo aptitude update -y"
-        sh "sudo aptitude install -y lxc"
-    end
+    desc "initialize/install lxc".green
+    task :init => [:install_lxc,:network_config]
 
     desc "configure outbound IP traffic from a container"
     task :network_config do
@@ -220,7 +214,20 @@ namespace :lxc do
     end
 
     def lxc2ip(name)
+        #ip = `sudo lxc-ls --fancy|grep '#{arg.name}'|awk '{print $3}'`.strip
         ip = `sudo lxc-ls --fancy|egrep '^#{name}\s+'|awk '{print $3}'`.strip
         ip
     end   
+
+    desc "rsync PROJ_HOME to lxc"
+    task :sync, [:name] do |t,arg|
+        sh "rsync -avx --exclude .git --delete #{PROJ_HOME} ubuntu@#{lxc2ip(arg.name)}:/home/ubuntu/#{PROJ_HOME.split('/').last}"
+        sh "scp #{PROJ_HOME}/lib/dev/init-ubuntu-dev.mk ubuntu@#{lxc2ip(arg.name)}:/home/ubuntu"
+    end
+
+    desc "install lxc"
+    task :install_lxc do
+        sh "sudo aptitude update -y"
+        sh "sudo aptitude install -y lxc"
+    end
 end
