@@ -1,6 +1,7 @@
-.cabal-sandbox
 Main
 *.hi
 *.o
 opt
 .bundle
+.cabal-sandbox
+cabal.sandbox.config
