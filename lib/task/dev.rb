@@ -37,6 +37,14 @@ def terminal(cmd ='', opts ='', title ='')
     "gnome-terminal --title '#{title}' --execute sh -c '#{cmd} #{opts}'"
 end
 
+def src_files(spec_too =false)
+    if spec_too
+        FileList.new(SRC_DIR + '/**/*.hs').exclude(/main\.hs$/).join(' ')
+    else
+        FileList.new(SRC_DIR + '/**/*.hs').exclude(/.*Spec\.hs$|spec\.hs$/).join(' ')
+    end
+end
+
 PROJ_DIR = File.expand_path("#{File.dirname(__FILE__)}/../../.")
 SRC_DIR = proj_dir('src')
 ETC_DIR = proj_dir('etc')

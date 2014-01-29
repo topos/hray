@@ -6,13 +6,10 @@ namespace :dev do
         arg.with_defaults(build_mode: 'all')
         Dir.chdir(SRC_DIR) do
             make_all
-            @listener = Listen.to('.', relative_path: true, filter: /\.hs$/) do |modified, added, removed|
-                if arg.build_mode == 'all'
-                    make_all unless FileList[([modified]+[added]).flatten].exclude(/^.+Spec\.hs$/).empty?
-                else # anything, e.g.: "inc"
-                    make_inc(modified, added, removed)
-                end
-                make_spec(modified, added) unless FileList[([modified]+[added]).flatten].ext('Spec.hs').empty?
+            @listener = Listen.to('.', relative_path: true, filter: /(\.hs$|Main$|Spec$)/) do |modified,added,removed|
+                all = FileList[([modified]+[added]+[removed]).flatten]
+                make_spec unless FileList[([modified]+[added]).flatten].ext('main.hs').empty?
+                make_all unless all.exclude(/^.+[Ss]{1}pec\.hs$/).empty?
             end
             @listener.start
             sleep
@@ -20,32 +17,16 @@ namespace :dev do
     end
 
     task :all do
-        Dir.chdir(SRC_DIR) do
-            make_all
-        end
+        make_spec
+        make_all
     end
     
     desc "run all tests (specs)"
     task :test => :spec
     
-    desc "run specs or a single one"
-    task :spec, [:spec] do |t,arg|
-        arg.with_defaults(spec: 'all')
-        if arg.spec =~ /^.+Spec$/
-            sh "#{arg.spec}"
-        elsif arg.spec == '-1'
-            Dir.chdir(SRC_DIR) do
-                sh "./#{Dir.entries('.').sort_by{|f|File.mtime(f)}.select{|f|f =~ /^.+Spec$/}.last}"
-            end
-        elsif File.exists?(SRC_DIR+arg.spec+'Spec')
-            sh SRC_DIR+arg.spec+'Spec'
-        else # all
-            Dir.chdir(SRC_DIR) do
-                Dir.entries('.').sort_by{|f|File.mtime(f)}.select{|f|f=~/^.+Spec$/}.each do |spec|
-                    sh "./#{spec}"
-                end
-            end
-        end
+    desc "run specs"
+    task :spec do
+        sh "cd #{PROJ_DIR} && ./Spec"
     end
     
     desc "build app"
@@ -179,7 +160,16 @@ namespace :dev do
 
     def make_all
         puts "- #{DateTime.now.strftime('%I:%M:%S')} (all)".yellow
-        ghc_cmd = "#{GHC} --make #{FileList.new('**/*.hs').exclude('*Spec.hs').join(' ')} -o Main #{EXTRA_LIB} 2>&1" 
+        make
+    end
+
+    def make_spec
+        puts "- #{DateTime.now.strftime('%H:%M:%S')} (spec)".yellow
+        make(src_files(spec_too=true), 'Spec')
+    end
+    
+    def make(src =src_files, name ='Main')
+        ghc_cmd = "#{GHC} --make #{src} -o #{name} #{EXTRA_LIB} 2>&1" 
         IO.popen(ghc_cmd) do |io|
             Process.wait(io.pid)
             putsh($? == 0, io.readlines.select{|l|l.size > 0})
@@ -187,32 +177,6 @@ namespace :dev do
         end
     end
 
-    def make_inc(modified, added, removed)
-        puts "- #{DateTime.now.strftime('%I:%M:%S')} (inc)".yellow
-        unless (modified+added).empty?
-            if compiler(modified+added)
-                src = FileList['**/*.hs']
-                src2obj = src.ext('o')
-                obj = FileList['*.o']
-                (src2obj-obj).ext('hs').each{|f|puts "#{f}".green}
-                linker
-            end
-        end
-    end
-
-    def make_spec(modified, added)
-        puts "- #{DateTime.now.strftime('%H:%M:%S')} (spec)".yellow
-        ([modified]+[added]).flatten.each do |s|
-            if s =~ /^.+Spec\.hs$/
-                IO.popen("#{GHC} --make #{s} -o #{s.split('.').first} 2>&1") do |io|
-                    Process.wait(io.pid)
-                    putsh($? == 0, io.readlines.select{|l|l.size > 0})
-                    io.close
-                end
-            end
-        end
-    end
-    
     def compiler(src)
         FileList[src].ext('o').each{|f|File.delete(f) if File.exists?(f)}
         (src.class == String ? [src] : src).each do |f|
