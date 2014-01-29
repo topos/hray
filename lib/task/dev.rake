@@ -169,7 +169,7 @@ namespace :dev do
     end
     
     def make(src =src_files, name ='Main')
-        ghc_cmd = "#{GHC} --make #{src} -o #{name} #{EXTRA_LIB} 2>&1" 
+        ghc_cmd = "#{GHC} --make #{src} -o #{name} #{EXTRA_LIB} -optl-Wl,-rpath,'#{EXTRA_LIB_DIR}' 2>&1" 
         IO.popen(ghc_cmd) do |io|
             Process.wait(io.pid)
             status = $? == 0
@@ -196,17 +196,13 @@ namespace :dev do
         true
     end
 
-    def linker
-        ghc_comd ="#{GHC} *.o -o Main #{EXTRA_LIB}"
-        puts sh
-        sh ghc_cmd
-    end
-
     def putsh(ok, res, app_name)
         if ok
-            r = [] << "+ make".green + " #{app_name} " + "succeeded".green + " @#{DateTime.now.strftime('%H:%M:%S')}\n"
+            r = [] 
+            r << "+ make".green + " ./src/#{app_name} " + "succeeded".green + " @#{DateTime.now.strftime('%H:%M:%S')}\n"
         else
-            r = res.map{|l|l.yellow} << "- make".red + " #{app_name} " + "failed".red + " @#{DateTime.now.strftime('%H:%M:%S')}\n"
+            r = res.map{|l|l.yellow} 
+            r << "- make".red + " ./src/#{app_name} " + "failed".red + " @#{DateTime.now.strftime('%H:%M:%S')}\n"
         end
         r.each{|l|print l}
     end
