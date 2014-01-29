@@ -5,6 +5,7 @@ namespace :dev do
         require 'listen'
         arg.with_defaults(build_mode: 'all')
         Dir.chdir(SRC_DIR) do
+            make_spec
             make_all
             @listener = Listen.to('.', relative_path: true, filter: /(\.hs$|Main$|Spec$)/) do |modified,added,removed|
                 all = FileList[([modified]+[added]+[removed]).flatten]
@@ -26,7 +27,7 @@ namespace :dev do
     
     desc "run specs"
     task :spec do
-        sh "cd #{PROJ_DIR} && ./Spec"
+        sh "cd #{SRC_DIR} && ./Spec"
     end
     
     desc "build app"

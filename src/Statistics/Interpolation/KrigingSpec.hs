@@ -1,12 +1,9 @@
-module Statistics.Interpolation.KrigingSpec where
+module Statistics.Interpolation.KrigingSpec (spec) where
 
 import Data.Matrix
 import Test.Hspec
 import Test.QuickCheck
 import Statistics.Interpolation.Kriging
-
-main :: IO ()
-main = hspec spec
 
 distanceMatrix :: Matrix Double
 distanceMatrix = fromLists [[ 0,     4.47,  3.61,  8.06,  9.49,  6.71,  8.94,  13.45]
