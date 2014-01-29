@@ -20,3 +20,6 @@ spec = do
   describe "Kriging.variogram" $ do
     it "returns 0 when h=0" $ do
       variogram 0 `shouldBe` 0
+    it "return 1 when h=1" $ do
+      (variogram 1) `shouldSatisfy` (> 1.0)
+      ((variogram 1)/(variogram 2)) `shouldSatisfy` (< 1.0)
