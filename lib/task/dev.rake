@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 namespace :dev do
     desc "start"
-    task :start, [:build_mode] do |t,arg|
+    task :start do
         require 'listen'
-        arg.with_defaults(build_mode: 'all')
         Dir.chdir(SRC_DIR) do
             make_spec
             make_all
-            @listener = Listen.to('.', relative_path: true, filter: /(\.hs$|Main$|Spec$)/) do |modified,added,removed|
-                all = FileList[([modified]+[added]+[removed]).flatten]
-                make_spec unless FileList[([modified]+[added]).flatten].ext('main.hs').empty?
-                make_all unless all.exclude(/^.+[Ss]{1}pec\.hs$/).empty?
+            @listener = Listen.to('.', relative_path: true, filter: /(\.hs$|\/Main$|\/Spec$)/) do |modified,added,removed|
+                make_spec
+                make_all
             end
             @listener.start
+            trap('SIGINT') {@listener.stop; exit}
             sleep
         end
     end
 
     task :all do
-        make_spec
-        make_all
+        Dir.chdir(SRC_DIR) do
+            make_spec
+            make_all
+        end
     end
     
     desc "run all tests (specs)"
@@ -160,12 +161,10 @@ namespace :dev do
     end
 
     def make_all
-        puts "- #{DateTime.now.strftime('%I:%M:%S')} (all)".yellow
         make
     end
 
     def make_spec
-        puts "- #{DateTime.now.strftime('%H:%M:%S')} (spec)".yellow
         make(src_files(spec_too=true), 'Spec')
     end
     
@@ -173,7 +172,9 @@ namespace :dev do
         ghc_cmd = "#{GHC} --make #{src} -o #{name} #{EXTRA_LIB} 2>&1" 
         IO.popen(ghc_cmd) do |io|
             Process.wait(io.pid)
-            putsh($? == 0, io.readlines.select{|l|l.size > 0})
+            status = $? == 0
+            putsh(status, io.readlines.select{|l|l.size > 0}, name)
+            sh "rm -f #{name}" unless status
             io.close
         end
     end
@@ -199,22 +200,15 @@ namespace :dev do
         ghc_comd ="#{GHC} *.o -o Main #{EXTRA_LIB}"
         puts sh
         sh ghc_cmd
-        # puts "#{GHC} *.o -o Main".yellow
-        # IO.popen("#{GHC} *.o -o Main 2>&1") do |io|
-        #     Process.wait(io.pid)
-        #     putsh($? == 0, io.readlines.select{|l|l.size > 1}, __callee__)
-        #     io.close 
-        # end
     end
-    
-    def putsh(ok,res,phase =nil)
+
+    def putsh(ok, res, app_name)
         if ok
-            res.each{|l|print "#{l}".green}
-            puts phase.nil? ? "passed".green.bold : "#{phase} passed".green.bold
+            r = [] << "+ make".green + " #{app_name} " + "succeeded".green + " @#{DateTime.now.strftime('%H:%M:%S')}\n"
         else
-            res.each{|l|print "#{l}".red}
-            puts phase.nil? ? "failed".red.bold : "#{phase} failed".red.bold
+            r = res.map{|l|l.yellow} << "- make".red + " #{app_name} " + "failed".red + " @#{DateTime.now.strftime('%H:%M:%S')}\n"
         end
+        r.each{|l|print l}
     end
     
     def dot_ghci

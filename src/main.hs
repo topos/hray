@@ -9,5 +9,5 @@ import Arg (args,help,printUsage,role)
 
 main :: IO ()
 main = C.defaultMain args
---main = W.defaultMain
+-- main = W.defaultMain
 
