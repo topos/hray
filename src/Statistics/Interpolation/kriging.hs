@@ -1,26 +1,43 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-module Statistics.Interpolation.Kriging (predict,covariance,variogram) where
+{-# LANGUAGE ScopedTypeVariables,TemplateHaskell #-}
+module Statistics.Interpolation.Kriging
+       (flat,spherical,exponential,gaussian
+       ,mkParams,nugget,sill,range,c0,c1)
+       where
+import Control.Lens
 
-import Data.Matrix
+-- ref: http://people.ku.edu/~gbohling/cpe940/Variograms.pdf 
+data Parameters = Parameters {_nugget :: Double
+                             ,_sill :: Double
+                             ,_range :: Double
+                             ,_c0 :: Double
+                             ,_c1 :: Double
+                             } deriving (Show)
+makeLenses ''Parameters
 
-type X = Double
-type Y = Double
-type V = Double
+type Nugget = Double
+type Sill = Double
+type Range = Double
+type H = Double
 
-predict :: X -> Y -> V
-predict x y = x+y
+mkParams :: Nugget -> Sill -> Range -> Parameters
+mkParams nugget sill range = Parameters {_nugget = nugget
+                                        ,_sill = sill
+                                        ,_range = range
+                                        ,_c0 = nugget
+                                        ,_c1 = sill-nugget}
 
-e :: Double = exp 1
-c0 :: Double = 0
-c1 :: Double = 10
-a :: Double = 10
+-- variograms: www.nbb.cornell.edu/neurobio/land/OldStudentProjects/cs490-94to95/clang/kriging.html
+flat :: Parameters -> H -> Double
+flat p h | h == 0 = p^.c0
+         | otherwise = p^.sill
 
-covariance :: Double -> Double
-covariance h
-  | abs h == 0 = c0+c1
-  | otherwise = c1*e**((-3.0)*abs(h)/a)
+spherical :: Parameters -> H -> Double
+spherical p h | abs h <= (p^.range) = (p^.c0)+(p^.c1)*(1.5*h/(p^.range)-0.5*(h/(p^.range))**3)
+              | otherwise = p^.sill
 
-variogram:: Double -> Double
-variogram h
-  | h == 0 = 0
-  | otherwise = c0+c1*(1.0-e**((-3.0)*abs(h)/a))
+exponential :: Parameters -> H -> Double
+exponential p h | abs h == 0 = 0
+                | abs h > 0 = (p^.c0)+(p^.c1)*(1-exp((-3)*(abs h)/(p^.range)))
+                              
+gaussian :: Parameters -> H -> Double
+gaussian p h = (p^.sill)*(1-exp((-3)*h**2/(p^.range)**2))
