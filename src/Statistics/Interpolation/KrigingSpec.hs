@@ -38,14 +38,26 @@ spec = do
       it "returns c0 when h=0" $ do
         spherical p 0 `shouldBe` p^.c0
       it "returns (c0,sill) when 0<h<=range" $ do
-        spherical p (range'/2) `shouldSatisfy` (> p^.c0)
-        spherical p (range'/2) `shouldSatisfy` (< p^.sill)
-        spherical p (range'/4) `shouldSatisfy` (> p^.c0)
-        spherical p (range'/4) `shouldSatisfy` (< p^.sill)
-        spherical p (range'/16) `shouldSatisfy` (> p^.c0)
-        spherical p (range'/16) `shouldSatisfy` (< p^.sill)
-        spherical p (range'/32) `shouldSatisfy` (> p^.c0)
-        spherical p (range'/32) `shouldSatisfy` (< p^.sill)
+        -- refactor code below
+        spherical p (range'/2) `shouldSatisfy` (\z -> z > p^.c0 && z < p^.sill)
+        spherical p (range'/4) `shouldSatisfy` (\z -> z > p^.c0 && z < p^.sill)
+        spherical p (range'/16) `shouldSatisfy` (\z -> z > p^.c0 && z < p^.sill)
+        spherical p (range'/32) `shouldSatisfy` (\z -> z > p^.c0 && z < p^.sill)
       it "returns sill when h>=range" $ do
         spherical p (range') `shouldBe` p^.sill
         spherical p (2*range') `shouldBe` p^.sill
+        spherical p (10*range') `shouldBe` p^.sill
+    describe "Kriging.exponential" $ do
+      it "returns 0 when h=0" $ do
+        exponential p 0 `shouldBe` 0
+      it "returns (0,sill) when h>=0" $ do
+        exponential p (range') `shouldSatisfy` (< p^.sill)
+        exponential p (2*range') `shouldSatisfy` (< p^.sill)
+        exponential p (10*range') `shouldSatisfy` (< p^.sill)
+    describe "Kriging.gaussian" $ do
+      it "returns 0 when h=0" $ do
+        gaussian p 0 `shouldBe` 0
+      it "returns (0,sill) when h>=0" $ do
+        gaussian p (range') `shouldSatisfy` (< p^.sill)
+        gaussian p (2*range') `shouldSatisfy` (< p^.sill)
+        gaussian p (10*range') `shouldSatisfy` (<= p^.sill) -- in theory it should be < the sill

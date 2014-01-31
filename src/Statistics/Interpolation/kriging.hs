@@ -40,4 +40,5 @@ exponential p h | abs h == 0 = 0
                 | abs h > 0 = (p^.c0)+(p^.c1)*(1-exp((-3)*(abs h)/(p^.range)))
                               
 gaussian :: Parameters -> H -> Double
-gaussian p h = (p^.sill)*(1-exp((-3)*h**2/(p^.range)**2))
+gaussian p h | h == 0 = 0
+             | otherwise = (p^.sill)*(1-exp((-3)*(abs h)**2/((p^.range)**2)))
