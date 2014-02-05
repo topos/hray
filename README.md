@@ -28,6 +28,6 @@ One note before proceeding: this will most probably work only on Ubuntu 13.10 (S
 4. rake dev:init
   - debug until it works, (obviously) if it doesn't work the first round
   - most bugs related to dev (ubuntu) packages not being installed
-5. rake cc (continuous (cheesy) compile
+5. rake cc (continuous (or cheesy) compile)
   - builds Main and Spec in *HRAY_DIR*/src
 6. edit code in *HRAY_DIR*/src 
