@@ -22,12 +22,12 @@ A dev environment with possibly the following useful bits:
 One note before proceeding: this will most probably work only on Ubuntu 13.10 (Saucy).
 
 1. git pull http://github.com/topos/hray
-2. cd *HRAY DIR*
+2. cd *HRAY_DIR*
 3. gem install rake
   - possibly others?
 4. rake dev:init
   - debug until it works, (obviously) if it doesn't work the first round
   - most bugs related to dev (ubuntu) packages not being installed
 5. rake cc (continuous (cheesy) compile
-  - builds Main and Spec in *HRAY DIR*/src
-6. edit code in *HRAY DIR*/src 
+  - builds Main and Spec in *HRAY_DIR*/src
+6. edit code in *HRAY_DIR*/src 
