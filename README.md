@@ -15,7 +15,7 @@ A dev environment with possibly the following useful bits:
 2. keep track of cabals with cabal.list
 3. cheesy continuous compilation (rake cc)--should work well enough for small projects
 4. (questionable but I like it) rake environment
-5. and (even more questinable) my updates as I play around with GHC
+5. and (even more questionable) my updates as I play around with GHC
 
 #### How to get it to work? (Definitely not for the novice)
 
@@ -30,4 +30,4 @@ One note before proceeding: this will most probably work only on Ubuntu 13.10 (S
   - most bugs related to dev (ubuntu) packages not being installed
 5. rake cc (continuous (or cheesy) compile)
   - builds Main and Spec in *HRAY_DIR*/src
-6. edit code in *HRAY_DIR*/src 
+6. edit code in *HRAY_DIR*/src
