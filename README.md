@@ -3,12 +3,12 @@ hray
 
 haskell toys: my feeble attempt to learn Haskell
 
-Why share? 
-----------
+#### Why share? 
+
 In case it is of use to others.
 
-What is it? 
-----------
+#### What is it? 
+
 A dev environment with possibly the following useful bits:
 
 1. cabal sandbox
@@ -17,8 +17,8 @@ A dev environment with possibly the following useful bits:
 4. (questionable but I like it) rake environment
 5. and (even more questinable) my updates as I play around with GHC
 
-How to get it to work? (Definitely not for the novice)
-------------------------------------------------------
+#### How to get it to work? (Definitely not for the novice)
+
 One note before proceeding: this will most probably work only on Ubuntu 13.10 (Saucy).
 
 1. git pull http://github.com/topos/hray
