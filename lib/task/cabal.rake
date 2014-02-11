@@ -18,6 +18,11 @@ namespace :cabal do
                 pkg_list.each do |pkg|
                     next if pkg.start_with?("yesod-bin-") && File.exists?("#{CABAL_SANDBOX_DIR}/bin/yesod")
                     if platform?('linux')
+                        # hmatrix is depedent on libgsl0-dev and liblapack-dev
+                        # not sure where else to the do the following
+                        if pkg.include?("hmatrix-")
+                            sh "sudo apt-get install -y libgsl0-dev liblapack-dev gnuplot imagemagick"
+                        end
                         sh "cabal install --extra-include-dirs=#{OPT_DIR}/zmq/include --extra-lib-dirs=#{OPT_DIR}/zmq/lib #{pkg}"
                     elsif platform?('darwin')
                         sh "cabal install #{pkg}"
@@ -43,7 +48,7 @@ namespace :cabal do
             end
         end
     end
-    
+
     desc "init. your cabal sandbox"
     task :init do
         unless Dir.exists? "#{PROJ_DIR}/.cabal-sandbox"
@@ -60,7 +65,7 @@ namespace :cabal do
     task :install_dependencies do
         sh "cabal install --only-dependencies"
     end
-    
+
     desc "clobber (remove) your cabal sandbox"
     task :clobber do
         if Dir.exists? SANDBOX_DIR

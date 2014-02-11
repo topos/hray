@@ -5,7 +5,7 @@ module Statistics.Interpolation.Kriging
        where
 import Control.Lens
 
--- ref: http://people.ku.edu/~gbohling/cpe940/Variograms.pdf 
+-- ref: http://people.ku.edu/~gbohling/cpe940/Variograms.pdf
 data Parameters = Parameters {_nugget :: Double
                              ,_sill :: Double
                              ,_range :: Double
@@ -38,7 +38,7 @@ spherical p h | abs h <= (p^.range) = (p^.c0)+(p^.c1)*(1.5*h/(p^.range)-0.5*(h/(
 exponential :: Parameters -> H -> Double
 exponential p h | abs h == 0 = 0
                 | abs h > 0 = (p^.c0)+(p^.c1)*(1-exp((-3)*(abs h)/(p^.range)))
-                              
+
 gaussian :: Parameters -> H -> Double
 gaussian p h | h == 0 = 0
              | otherwise = (p^.sill)*(1-exp((-3)*(abs h)**2/((p^.range)**2)))

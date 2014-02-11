@@ -11,12 +11,11 @@ wai-2.0.0
 wai-extra-2.0.3
 warp-2.0.2
 linear-1.4
-matrix-0.2.4.0
-#persistent-postgresql-1.2.1
+repa-3.2.3.3
+repa-io-3.2.3.2
+repa-algorithms-3.2.4.1
+repa-plugin-1.0.0.1
+repa-devil-0.3.2.2
+repa-examples-3.2.3.2
 # for later
-#repa-3.2.3.3
-#repa-io-3.2.3.2
-#repa-algorithms-3.2.4.1
-#repa-plugin-1.0.0.1
-#repa-devil-0.3.2.2
-#repa-examples-3.2.3.2
+#persistent-postgresql-1.2.1
