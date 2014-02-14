@@ -73,7 +73,7 @@ default-keyboard:
 gemrc:; echo 'gem: --no-ri --no-rdoc' >> ~/.gemrc
 
 GEMS=rake smart_colored
-gems: 
+gems:
 	@for i in ${GEMS}; do \
 		gem=$$(echo $$i|sed 's/:/ -v /1'); \
 		echo $$gem; \
