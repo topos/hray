@@ -9,7 +9,8 @@ namespace :cabal do
         next if cabal_pkg =~ /^\s*#.*$/ || cabal_pkg =~ /^\s*$/
         cabal, pkgs = cabal_pkg.split('|')
         sh "sudo apt-get install -y #{pkgs}" unless pkgs.nil? || pkgs == ""
-        unless cabal.include?(cabal)
+        cabals = `cabal list --installed --simple-output`.split('\n').map{|l|l.split.join('-')}
+        unless cabals.include?(cabal)
           pkg_list << cabal
         else
           puts "#{cabal} " + "already installed".green
@@ -52,17 +53,50 @@ namespace :cabal do
   task :init do
     unless Dir.exists? "#{PROJ_DIR}/.cabal-sandbox"
       Dir.chdir(PROJ_DIR) do
+        sh "sudo apt-get install -y cabal-install"
         sh "cabal update"
-        sh "cabal install cabal-install"
+        #sh "cabal install cabal-install"
+        #sh "#{File.expand_path('~/.cabal/bin/cabal')} sandbox init"
         sh "cabal sandbox init"
+        task('cabal:install').invoke
       end
     end
   end
 
+  task :compile_cabal do
+    Dir.chdir('/var/tmp') do
+      sh "wget http://www.haskell.org/cabal/release/cabal-1.18.1.2/Cabal-1.18.1.2.tar.gz"
+      sh "tar xpf Cabal-1.18.1.2.tar.gz"
+      Dir.chdir('Cabal-1.18.1.2') do
+        sh "ghc --make Setup"
+        sh "./Setup configure --global --prefix=/opt/ghc"
+        sh "./Setup build"
+        sh "./Setup install"
+      end
+    end
+  end
+
+  task :compile_cabal_install do
+    Dir.chdir('/var/tmp') do
+      sh "wget http://www.haskell.org/cabal/release/cabal-install-1.18.0.2/cabal-install-1.18.0.2.tar.gz"
+      sh "tar xpf cabal-install-1.18.0.2.tar.gz"
+      Dir.chdir('cabal-install-1.18.0.2') do
+        sh "ghc --make Setup"
+        sh "./Setup configure --global --prefix=/opt/ghc"
+        sh "./Setup build"
+        sh "./Setup install"
+      end
+    end
+  end
 
   desc "install only dependencies"
   task :install_dependencies do
     sh "cabal install --only-dependencies"
+  end
+
+  desc "info"
+  task :info do
+    version('cabal')
   end
 
   desc "clobber (remove) your cabal sandbox"

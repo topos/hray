@@ -3,11 +3,11 @@ hray
 
 haskell toys: my feeble attempt to learn Haskell
 
-#### Why share? 
+#### Why share?
 
 In case it is of use to others.
 
-#### What is it? 
+#### What is it?
 
 A dev environment with possibly the following useful bits:
 
@@ -23,11 +23,11 @@ One note before proceeding: this will most probably work only on Ubuntu 13.10 (S
 
 1. git pull http://github.com/topos/hray
 2. cd *HRAY_DIR*
-3. gem install rake
-  - possibly others?
-4. rake dev:init
+3. gem install rake bundler
+4. bundle install
+5. rake dev:init
   - debug until it works, (obviously) if it doesn't work the first round
   - most bugs related to dev (ubuntu) packages not being installed
-5. rake cc (continuous (or cheesy) compile)
+6. rake cc (continuous (or cheesy) compile)
   - builds Main and Spec in *HRAY_DIR*/src
-6. edit code in *HRAY_DIR*/src
+7. edit code in *HRAY_DIR*/src

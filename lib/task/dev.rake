@@ -114,18 +114,9 @@ namespace :dev do
   desc "info"
   task :info do
     puts PROJ_HOME.red
-    puts "rake: PATH=#{ENV['PATH']}"
-    vs = []
-    ['ghc', 'cabal'].each do |c|
-      vs << `#{c} --version`.strip
-    end
-    vs.each_with_index do |v,i|
-      if i%2 == 0
-        puts "#{v}".green
-      else
-        puts "#{v}"
-      end
-    end
+    puts "- PATH=#{ENV['PATH']}".yellow
+    puts "- GHC=#{GHC}".cyan
+    ['ghc','cabal'].each{|c|version(c)}
   end
 
   # cabal may not be needed--static compilation may not require external packages
@@ -170,6 +161,7 @@ namespace :dev do
 
   def make(src =src_files, name ='Main')
     ghc_cmd = "#{GHC} --make #{src} -o #{name} #{EXTRA_LIB} -optl-Wl,-rpath,'#{EXTRA_LIB_DIR}' 2>&1"
+    #puts ghc_cmd.red
     IO.popen(ghc_cmd) do |io|
       Process.wait(io.pid)
       status = $? == 0

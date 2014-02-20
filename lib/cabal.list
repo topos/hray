@@ -1,4 +1,4 @@
-# <cabal packag> | <debian package(s)>
+# cabal package | [debian package]
 #cabal-install-1.18.0.2
 distributed-process-0.4.2
 distributed-process-simplelocalnet-0.2.0.9
@@ -17,7 +17,8 @@ repa-3.2.3.3
 repa-io-3.2.3.2
 repa-algorithms-3.2.4.1 
 repa-plugin-1.0.0.1
-repa-devil-0.3.2.2 | libdevil-dev
-repa-examples-3.2.3.2
+repa-devil-0.3.2.2 | libdevil-dev 
+repa-examples-3.2.3.2 | llvm-dev
+async-2.0.1.5
 # for later
 #persistent-postgresql-1.2.1

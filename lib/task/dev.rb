@@ -5,44 +5,49 @@ require 'yaml'
 require 'smart_colored/extend'
 
 def platform?(p)
-    `uname -s`.strip.downcase == p.downcase
+  `uname -s`.strip.downcase == p.downcase
 end
 
 def proj_dir(subdir =nil)
-    path = [] << PROJ_DIR
-    path << subdir unless subdir.nil?
-    path.join('/')
+  path = [] << PROJ_DIR
+  path << subdir unless subdir.nil?
+  path.join('/')
 end
 
 def process_running?(name, argfilter =nil)
-    require 'sys/proctable'
-    include Sys
-    ProcTable.ps do |proc|
-        if argfilter.nil?
-            return true if proc.comm == name
-        else
-            return true if proc.comm == name && proc.cmdline.split.include?(argfilter)
-        end
+  require 'sys/proctable'
+  include Sys
+  ProcTable.ps do |proc|
+    if argfilter.nil?
+      return true if proc.comm == name
+    else
+      return true if proc.comm == name && proc.cmdline.split.include?(argfilter)
     end
-    false
+  end
+  false
 end
 
 def proj_mode
-    ENV['PROJ_MODE'].nil? ? 'Development' : ENV['PROJ_MODE']
+  ENV['PROJ_MODE'].nil? ? 'Development' : ENV['PROJ_MODE']
 end
 
 def terminal(cmd ='', opts ='', title ='')
-    raise "cmd is undefined" if cmd.nil?
-    title = "#{cmd} #{opts}" if title == ''
-    "gnome-terminal --title '#{title}' --execute sh -c '#{cmd} #{opts}'"
+  raise "cmd is undefined" if cmd.nil?
+  title = "#{cmd} #{opts}" if title == ''
+  "gnome-terminal --title '#{title}' --execute sh -c '#{cmd} #{opts}'"
 end
 
 def src_files(spec_too =false)
-    if spec_too
-        FileList.new(SRC_DIR + '/**/*.hs').exclude(/main\.hs$/).join(' ')
-    else
-        FileList.new(SRC_DIR + '/**/*.hs').exclude(/.*Spec\.hs$|spec\.hs$/).join(' ')
-    end
+  if spec_too
+    FileList.new(SRC_DIR + '/**/*.hs').exclude(/main\.hs$/).join(' ')
+  else
+    FileList.new(SRC_DIR + '/**/*.hs').exclude(/.*Spec\.hs$|spec\.hs$/).join(' ')
+  end
+end
+
+def version(bin, arg='--version')
+  puts `which #{bin}`.strip.green
+  `#{bin} #{arg}`.split(/\n/).map{|l|puts "- #{l.strip}".yellow}
 end
 
 PROJ_DIR = File.expand_path("#{File.dirname(__FILE__)}/../../.")
@@ -65,14 +70,14 @@ CABAL_SANDBOX_DIR = "#{PROJ_DIR}/.cabal-sandbox"
 EXTRA_INC_DIR = "/opt/zmq/include"
 EXTRA_LIB_DIR = "/opt/zmq/lib"
 EXTRA_INC, EXTRA_LIB = ['#{EXTRA_INC_DIR}',"-L#{EXTRA_LIB_DIR} -lzmq"]
-GHC = "ghc -no-user-package-db -package-db #{GHC_PACKAGE_PATH} -threaded"
+GHC = "ghc #{GHC_PACKAGE_PATH.split.map{|p|"-package-db #{p}"}.join(' ')} -threaded"
 
-# ~/.cabal/bin is important since the new version of cabal will go there
+# ~/.cabal/bin is important since the latest version of cabal-install will go there
 _path = []
 _path << "#{PROJ_DIR}/bin"
 _path << "#{PROJ_DIR}/.cabal-sandbox/bin"
-_path << "~/.cabal/bin"
-_path << (platform?('darwin') ? '~/Library/Haskell/bin' : '/opt/ghc/bin')
+_path << "#{File.expand_path('~')}/.cabal/bin"
+#_path << (platform?('darwin') ? '~/Library/Haskell/bin' : '/opt/ghc/bin')
 _path << '/usr/local/bin'
 _path << '/usr/bin'
 _path << '/bin'

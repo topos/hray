@@ -120,7 +120,20 @@ namespace :lxc do
     puts "ip=#{lxc2ip(arg.name)}".green
   end
 
-  desc "configure an LXC so ssh doesn't require a password"
+  desc "copy ~ubunut/.bashrd"
+  task :dotsh, [:name] do |t,arg|
+    raise "error: name undefined".red if arg.name.nil?
+    lxcs = if ":all" == arg.name
+             `sudo lxc-ls -1`.lines.each.map{|l|l.strip}
+           else
+             [arg.name]
+           end
+    lxcs.each do |name|
+      puts "lxc=#{name.red}"
+      sh "sudo cp #{TASK_DIR}/bashrc -p /var/lib/lxc/#{name}/rootfs/home/ubuntu/.bashrc"
+    end
+  end
+
   task :dotssh, [:name] do |t,arg|
     raise "error: name undefined".red if arg.name.nil?
     lxcs = if ":all" == arg.name
@@ -167,7 +180,9 @@ namespace :lxc do
     sleep 10
     sh "rake lxc:install_packages[#{arg.name},'lxc rsync aptitude','--no-install-recommends']"
     sh "rake lxc:sudo_access[#{arg.name},ubuntu]"
+    sh "rake lxc:dotsh[#{arg.name}]"
     sh "rake lxc:dotssh[#{arg.name}]"
+    sh "rake lxc:sync[#{arg.name}]"
     # share home with container
   end
 
