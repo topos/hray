@@ -1,3 +1,4 @@
+# cabal:init seems to create ~/.ghc directory in addiction to .cabal (i dunno)
 namespace :cabal do
   desc "install cabal-sandbox packages"
   task :install, [:cabal] => [:init] do |t,arg|
@@ -9,11 +10,11 @@ namespace :cabal do
         next if cabal_pkg =~ /^\s*#.*$/ || cabal_pkg =~ /^\s*$/
         cabal, pkgs = cabal_pkg.split('|')
         sh "sudo apt-get install -y #{pkgs}" unless pkgs.nil? || pkgs == ""
-        cabals = `cabal list --installed --simple-output`.split('\n').map{|l|l.split.join('-')}
+        cabals = `cabal list --installed --simple-output`.split("\n").map{|l|l.split.join('-')}
         unless cabals.include?(cabal)
           pkg_list << cabal
         else
-          puts "#{cabal} " + "already installed".green
+          puts "#{cabal} " + "already installed".yellow
         end
       end
       if pkg_list.size > 0
@@ -21,8 +22,6 @@ namespace :cabal do
         pkg_list.each do |pkg|
           next if pkg.start_with?("yesod-bin-") && File.exists?("#{CABAL_SANDBOX_DIR}/bin/yesod")
           if platform?('linux')
-            # hmatrix is depedent on libgsl0-dev and liblapack-dev
-            # not sure where else to the do the following
             sh "cabal install --extra-include-dirs=#{OPT_DIR}/zmq/include --extra-lib-dirs=#{OPT_DIR}/zmq/lib #{pkg}"
           elsif platform?('darwin')
             sh "cabal install #{pkg}"
@@ -53,11 +52,9 @@ namespace :cabal do
   task :init, [:force] do |t,arg|
     unless Dir.exists?("#{PROJ_DIR}/.cabal-sandbox") && arg[:force].nil?
       Dir.chdir(PROJ_DIR) do
-        sh "sudo apt-get install -y cabal-install"
         sh "cabal update"
-        #sh "cabal install cabal-install"
-        #sh "#{File.expand_path('~/.cabal/bin/cabal')} sandbox init"
-
+        sh "cabal install cabal-install"
+        sh "#{File.expand_path('~/.cabal/bin/cabal')} sandbox init"
         task('cabal:install').invoke
       end
     end
