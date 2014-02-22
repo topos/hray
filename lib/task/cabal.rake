@@ -50,17 +50,24 @@ namespace :cabal do
   end
 
   desc "init. your cabal sandbox"
-  task :init do
-    unless Dir.exists? "#{PROJ_DIR}/.cabal-sandbox"
+  task :init, [:force] do |t,arg|
+    unless Dir.exists?("#{PROJ_DIR}/.cabal-sandbox") && arg[:force].nil?
       Dir.chdir(PROJ_DIR) do
         sh "sudo apt-get install -y cabal-install"
         sh "cabal update"
         #sh "cabal install cabal-install"
         #sh "#{File.expand_path('~/.cabal/bin/cabal')} sandbox init"
-        sh "cabal sandbox init"
+
         task('cabal:install').invoke
       end
     end
+  end
+
+  task :sandbox do
+    sh "cabal update"
+    sh "cabal sandbox init"
+    sh "cabal install cabal-install"
+    sh "cabal install --only-dependencies"
   end
 
   task :compile_cabal do
@@ -101,16 +108,18 @@ namespace :cabal do
 
   desc "clobber (remove) your cabal sandbox"
   task :clobber do
-    if Dir.exists? SANDBOX_DIR
-      Dir.chdir(PROJ_DIR) do
-        begin
+    begin
+      if Dir.exists? SANDBOX_DIR
+        Dir.chdir(PROJ_DIR) do
           sh "cabal sandbox delete"
-        ensure
-          sh "rm -rf #{SANDBOX_DIR}"
         end
+      else
+        puts "#{SANDBOX_DIR} doesn't exist".red
+        puts "manually removing cabal sandbox".yellow
       end
-    else
-      puts "noop: #{SANDBOX_DIR} doesn't exist".yellow
+    ensure
+      sh "rm -rf #{SANDBOX_DIR}"
+      sh "rm -f #{PROJ_HOME}/cabal.sandbox.config"
     end
   end
 end

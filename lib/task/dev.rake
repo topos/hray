@@ -71,6 +71,7 @@ namespace :dev do
 
   desc "init dev. env.: cabal-dev install"
   task :init => [:gems, 'zmq:install'] do
+    task('cabal:init').reenable
     task('cabal:init').invoke
   end
 
