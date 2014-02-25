@@ -52,9 +52,7 @@ namespace :cabal do
   task :init, [:force] do |t,arg|
     unless Dir.exists?("#{PROJ_DIR}/.cabal-sandbox") && arg[:force].nil?
       Dir.chdir(PROJ_DIR) do
-        sh "cabal update"
-        sh "cabal install cabal-install"
-        sh "#{File.expand_path('~/.cabal/bin/cabal')} sandbox init"
+        task('cabal:sandbox').invoke
         task('cabal:install').invoke
       end
     end
@@ -62,9 +60,9 @@ namespace :cabal do
 
   task :sandbox do
     sh "cabal update"
-    sh "cabal sandbox init"
     sh "cabal install cabal-install"
-    sh "cabal install --only-dependencies"
+    sh "cabal sandbox init"
+    #sh "cabal install --only-dependencies"
   end
 
   task :compile_cabal do
@@ -108,7 +106,7 @@ namespace :cabal do
     begin
       if Dir.exists? SANDBOX_DIR
         Dir.chdir(PROJ_DIR) do
-          sh "cabal sandbox delete"
+          sh "cabal sandbox delete || exit 0"
         end
       else
         puts "#{SANDBOX_DIR} doesn't exist".red
@@ -116,7 +114,7 @@ namespace :cabal do
       end
     ensure
       sh "rm -rf #{SANDBOX_DIR}"
-      sh "rm -f #{PROJ_HOME}/cabal.sandbox.config"
+      sh "rm -f #{PROJ_DIR}/cabal.sandbox.config"
     end
   end
 end

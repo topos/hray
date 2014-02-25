@@ -109,9 +109,13 @@ namespace :lxc do
   end
 
   desc "ssh"
-  task :ssh, [:name] do |t,arg|
+  task :ssh, [:name,:cmd] do |t,arg|
     raise "error: lxc \"name\" is required" if arg.name.nil?
-    sh "ssh #{lxc2ip(arg.name)}"
+    if arg.cmd.nil?
+      sh "ssh #{lxc2ip(arg.name)}"
+    else
+      sh "ssh #{lxc2ip(arg.name)} '#{arg.cmd}'"
+    end
   end
 
   desc "lxc2 name to ip addr."
@@ -169,7 +173,7 @@ namespace :lxc do
 
   desc "make a linux container--defaults:linux/<current release>"
   task :make, [:name,:template,:release] do |t,arg|
-    arg.with_defaults(name: "linux",template: "ubuntu",release: nil,hack: nil)
+    arg.with_defaults(name: "linux",template: "ubuntu",release: nil)
     cmd = [] << "lxc-create -t ubuntu -n #{arg.name}"
     cmd << "-- -r #{arg.release}" unless arg.release.nil?
     sh "sudo #{cmd.join(' ')}"
@@ -178,12 +182,16 @@ namespace :lxc do
     sh "sudo lxc-wait -n #{arg.name} -s RUNNING" unless arg.state.nil?
     puts "waiting for network... sleeping 10 s.".yellow
     sleep 10
-    sh "rake lxc:install_packages[#{arg.name},'lxc rsync aptitude','--no-install-recommends']"
+    sh "rake lxc:install[#{arg.name},'lxc rsync aptitude']"
     sh "rake lxc:sudo_access[#{arg.name},ubuntu]"
     sh "rake lxc:dotsh[#{arg.name}]"
     sh "rake lxc:dotssh[#{arg.name}]"
+  end
+
+  desc "make a linux container for development"
+  task :make_dev, [:name,:template,:release] => [:make] do |t,arg|
     sh "rake lxc:sync[#{arg.name}]"
-    # share home with container
+    sh "rake lxc:ssh[#{arg.name},'cd hray && make -f lib/dev.make']"
   end
 
   desc "give sudo access to a user on an lxc name"
@@ -192,31 +200,13 @@ namespace :lxc do
     task("lxc:exec").invoke(arg.name,"/bin/sh -c \"echo '#{arg.user}  ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/#{arg.user}\ && chmod 0440 /etc/sudoers.d/#{arg.user}\"")
   end
 
-  task :install_packages, [:name,:packages,:opt] do |t,arg|
-    unless arg.name.nil? || arg.packages.nil?
-      task('lxc:exec').reenable
-      task('lxc:exec').invoke(arg.name,'apt-get update -y')
-      pkgs = arg.packages.split(/\s+/).map{|p|p.strip}
-      begin
-        sh "bundle exec rake lxc:exec[#{arg.name},'apt-get install -y #{pkgs.join(' ')}']"
-        # doesn't work
-        #task('lxc:exec').reenable
-        #task('lxc:exec').invoke(arg.name,"apt-get install -y #{arg.opt||''} #{pkgs.join(' ')}")
-      rescue => x
-        puts x
-      end
-    else
-      puts "warning [noop]: \"name\" and/or \"packages\" missing"
-    end
-  end
-
   desc "initialize/install lxc".green
-  task :init => [:install_lxc,:install_package,:network_config]
+  task :init => [:install_lxc,:network_config]
 
   desc "configure outbound IP traffic from a container"
   task :network_config do
     # ! may not be needed anymore
-    # dotdir =   File.expand_path(File.dirname(__FILE__))
+    # dotdir = File.expand_path(File.dirname(__FILE__))
     # if File.exists?("/etc/lxc/default.conf") && !File.exists?("/etc/lxc/default.conf.orig")
     #   Dir.chdir("/etc/lxc") do
     #     sh "sudo mv -f default.conf default.conf.orig"
@@ -250,18 +240,20 @@ namespace :lxc do
 
   desc "rsync PROJ_HOME to lxc"
   task :sync, [:name] do |t,arg|
+    sh "rake lxc:exec[#{arg.name},'sudo apt-get install -y #{default_packages}']"
     sh "rsync -avx --exclude .git --delete #{PROJ_HOME} ubuntu@#{lxc2ip(arg.name)}:/home/ubuntu/"
     sh "rake lxc:exec[#{arg.name},'mkdir  -p /opt']"
     sh "rake lxc:exec[#{arg.name},'chown -R ubuntu /opt']"
     sh "rsync -avx --exclude .git --delete /opt/ ubuntu@#{lxc2ip(arg.name)}:/opt/"
-    sh "scp #{PROJ_HOME}/lib/dev/init-ubuntu-dev.mk ubuntu@#{lxc2ip(arg.name)}:/home/ubuntu"
-    sh "rake lxc:exec[#{arg.name},'sudo apt-get install -y ruby2.0 ruby2.0-dev build-essential libssl-dev zlib1g-dev ruby-switch']"
-    sh "rake lxc:exec[#{arg.name},'sudo apt-get install -y git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev']"
   end
 
   desc "install lxc"
   task :install_lxc do
     sh "sudo aptitude update -y"
     sh "sudo aptitude install -y lxc"
+  end
+
+  def default_packages 
+    'lxc rsync ruby2.0 ruby2.0-dev git-core curl zlib1g-dev build-essential libssl-dev libgmp-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev'
   end
 end

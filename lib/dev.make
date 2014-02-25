@@ -1,4 +1,5 @@
 all:
 	sudo gem install rake bundler
 	bundle install
-	rake dev:init
+	bundle exec rake cabal:clobber
+	bundle exec rake dev:init
