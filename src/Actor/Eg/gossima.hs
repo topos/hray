@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Actor.Gossima (start,defaultMain) where
+module Actor.Eg.Gossima (start,defaultMain) where
 
 import Control.Concurrent (threadDelay)
 import Data.Binary

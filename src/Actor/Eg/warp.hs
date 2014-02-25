@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Actor.Warp (defaultMain) where
+module Actor.Eg.Warp (defaultMain) where
 
 import Network.Wai (Application,responseBuilder)
 import Network.HTTP.Types (status200)
