@@ -1,38 +1,27 @@
-{- stolen from http://www.yesodweb.com/book/json-web-service -}
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Json where
 
-import System.Environment (getArgs)
-import Control.Exception (SomeException)
-import Control.Exception.Lifted (handle)
-import Control.Monad.IO.Class (liftIO)
-import Data.Aeson (Value, encode, object, (.=))
-import Data.Aeson.Parser (json)
-import Data.ByteString (ByteString)
-import Data.Conduit (ResourceT, ($$))
-import Data.Conduit.Attoparsec (sinkParser)
-import Network.HTTP.Types (status200, status400)
-import Network.Wai (Application, Response, requestBody, responseLBS)
-import Network.Wai.Handler.Warp (run)
+{-# LANGUAGE OverloadedStrings #-}
+import Data.Aeson
+import Data.Text (Text)
+import Network.Wai
+import Network.Wai.Internal (Response(ResponseBuilder))
+import Network.Wai.Handler.Warp
+import Network.HTTP.Types (status200)
+import Network.HTTP.Types.Header (hContentType)
+import Blaze.ByteString.Builder.ByteString (fromLazyByteString)
 
-app :: Application
-app req = handle invalidJson $ do
-    value <- requestBody req $$ sinkParser json
-    newValue <- liftIO $ modValue value
-    return $ responseLBS
-        status200
-        [("Content-Type", "application/json")]
-        $ encode newValue
+defmain = do
+  let port = 3000
+  putStrLn $ "Listening on port " ++ show port
+  run port app
 
-invalidJson :: SomeException -> IO Response
-invalidJson ex = return $ responseLBS
-    status400
-    [("Content-Type", "application/json")]
-    $ encode $ object [("message" .= show ex)]
+app req = return $ 
+          case pathInfo req of
+            -- Place custom routes here
+            _ -> anyRoute
 
--- Application-specific logic would go here.
-modValue :: Value -> IO Value
-modValue = return
+-- The data that will be converted to JSON
+jsonData = ["a","b","c"] :: [Text]
 
-defmain :: IO ()
-defmain = run 3000 app
+anyRoute = ResponseBuilder status200 [(hContentType, "application/json")] $ fromLazyByteString (encode jsonData)
