@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Zmq.Queue (defaultMain) where
+module Zmq.Queue (defmain) where
 
 import Control.Lens ((^.))
 import Control.Monad (forM_,forever)
@@ -41,7 +41,7 @@ server = do
       liftIO $ threadDelay (500*1000)
       send responder [] "World"       
 
-defaultMain args = do
+defmain args = do
   args <- args
   if not (args^.help) then
     case args^.role of

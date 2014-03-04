@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Actor.Eg.Gossima (start,defaultMain) where
+module Actor.Eg.Gossima (start,defmain) where
 
 import Control.Concurrent (threadDelay)
 import Data.Binary
@@ -23,9 +23,9 @@ server rPing = do
 client :: SendPort Ping -> Process ()
 client sPing = sendChan sPing Ping
 
--- main = defaultMain
-defaultMain :: IO ()
-defaultMain = do
+-- main = defmain
+defmain :: IO ()
+defmain = do
   Right transport <- createTransport "127.0.0.1" "8080" defaultTCPParameters
   node <- newLocalNode transport initRemoteTable
   runProcess node start
