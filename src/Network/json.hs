@@ -1,27 +1,34 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Json where
 
-{-# LANGUAGE OverloadedStrings #-}
-import Data.Aeson
-import Data.Text (Text)
-import Network.Wai
-import Network.Wai.Internal (Response(ResponseBuilder))
+import Network.Wai (pathInfo,responseBuilder,responseLBS)
 import Network.Wai.Handler.Warp
 import Network.HTTP.Types (status200)
 import Network.HTTP.Types.Header (hContentType)
+import Blaze.ByteString.Builder (copyByteString)
 import Blaze.ByteString.Builder.ByteString (fromLazyByteString)
-
+import Data.Monoid (mconcat)
+import Data.Aeson (encode)
+ 
 defmain = do
   let port = 3000
-  putStrLn $ "Listening on port " ++ show port
+  putStrLn $ "listening on port " ++ show port
   run port app
+ 
+app req = return $ case pathInfo req of
+                     ["hello"] -> hello
+                     ["j",x] -> get x
+                     _ -> home
+ 
+hello = responseBuilder status200 [(hContentType,"text/plain")] 
+        $ mconcat $ map copyByteString ["hello, world."]
 
-app req = return $ 
-          case pathInfo req of
-            -- Place custom routes here
-            _ -> anyRoute
+content = [1,2,3] :: [Int]
+home = responseBuilder status200 [(hContentType, "application/json")]
+       $ fromLazyByteString $ encode content
 
--- The data that will be converted to JSON
-jsonData = ["a","b","c"] :: [Text]
+get x = responseBuilder status200 [(hContentType,"application/json")]
+       $ fromLazyByteString $ encode [x]
 
-anyRoute = ResponseBuilder status200 [(hContentType, "application/json")] $ fromLazyByteString (encode jsonData)
+--index = responseBuilder status200 [(hContentType,"text/html")] $ mconcat $ map copyByteString
+--      ["<p>Hello, World!</p>","<p><a href='/yay'>yay</a></p>"]

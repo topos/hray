@@ -14,8 +14,9 @@ warp-2.0.2
 linear-1.4
 matrix-0.2.4.0
 hmatrix-0.15.2.0 | libgsl0-dev liblapack-dev gnuplot imagemagick
-attoparsec-conduit-1.0.1.2
 aeson-0.7.0.1
+utf8-string-0.3.7
+enumerator-0.4.20
 # repa-3.2.3.3
 # repa-io-3.2.3.2
 # repa-algorithms-3.2.4.1 
