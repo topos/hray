@@ -49,7 +49,7 @@ namespace :cabal do
   end
 
   desc "update each cabal in lib/cabal.list"
-  task :lib_update do
+  task :update_list do
     Dir.chdir(LIB_DIR) do
       puts "local [==|<] remote"
       list = File.open('cabal.list').read
