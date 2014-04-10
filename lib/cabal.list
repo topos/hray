@@ -3,17 +3,17 @@
 distributed-process-0.4.2
 distributed-process-simplelocalnet-0.2.0.9
 network-transport-tcp-0.3.1
-lens-3.10.1
+lens-4.1.2
 MonadCatchIO-transformers-0.3.1.0
-exceptions-0.3.3
-semigroups-0.12.2
-hspec-1.8.1.1
-wai-2.0.0
-wai-extra-2.0.3
-warp-2.0.2
-linear-1.4
-matrix-0.2.4.0
-hmatrix-0.15.2.0 | libgsl0-dev liblapack-dev gnuplot imagemagick
+exceptions-0.5
+semigroups-0.13.0.1
+hspec-1.9.2
+wai-2.1.0.2
+wai-extra-2.1.1.1
+warp-2.1.4
+linear-1.10
+matrix-0.3.0.0
+hmatrix-0.15.2.1 | libgsl0-dev liblapack-dev gnuplot imagemagick
 # repa-3.2.3.3
 # repa-io-3.2.3.2
 # repa-algorithms-3.2.4.1 

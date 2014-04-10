@@ -48,6 +48,42 @@ namespace :cabal do
     end
   end
 
+  desc "update each cabal in lib/cabal.list"
+  task :lib_update do
+    Dir.chdir(LIB_DIR) do
+      puts "local [==|<] remote"
+      list = File.open('cabal.list').read
+      list.gsub!(/\s*\r\n?/, "\n")
+      list.each_line do |l|
+        unless l =~ /^\s*#/
+          #cab_name = cab.split('|').first.split('-').reverse.drop(1).reverse.join('-')
+          cab_elems = l.split('|').first.split('-')
+          version, cabal = cab_elems.pop.strip, cab_elems.join('-')
+          l = cabal_list(cabal)
+          if l.last.first == cabal
+            if l[-1].last == version
+              puts "#{cabal}-#{version} == #{l.last.first}-#{l.last.last}".green
+            else
+              puts "#{cabal}-#{version} < #{l.last.first}-#{l.last.last}".yellow
+            end
+          end
+        end
+      end
+    end
+  end
+
+  # cabal/version pairs: [[cabal,version],...]
+  def cabal_list(cabal)
+    l = []
+    `cabal list --verbose --simple-output #{cabal}`.each_line do |line|
+      elems = line.split(/\s+/)
+      if cabal == elems.first
+        l << elems unless elems.empty?
+      end
+    end
+    l
+  end
+  
   desc "init. your cabal sandbox"
   task :init, [:force] do |t,arg|
     unless Dir.exists?("#{PROJ_DIR}/.cabal-sandbox") && arg[:force].nil?

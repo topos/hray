@@ -3,7 +3,12 @@ help:; @echo "make install"
 install: pkgs fonts emacs compression gems
 
 PKGS = ruby ruby-dev rake ksh fvwm git diffuse source-highlight flex bison g++-4.8
-pkgs:; for p in ${PKGS}; do sudo aptitude install -y $$p; done
+pkgs:
+	for p in ${PKGS}; do sudo aptitude install -y $$p; done
+
+default_gcc:
+	sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
+	sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50
 
 LIBS = libgconf2-4 libgconf2-dev libnss3-dev libnss3-1d libnss3-tools libudev-dev libxss-dev libxss-dev libxml2-dev libncurses-dev libgpm-dev libgmp10-dev libgmp10 libmpfr-dev libmpc-dev libisl-dev libcloog-isl-dev
 libs:
