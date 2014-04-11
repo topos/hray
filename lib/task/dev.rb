@@ -70,7 +70,7 @@ CABAL_SANDBOX_DIR = "#{PROJ_DIR}/.cabal-sandbox"
 EXTRA_INC_DIR = "/opt/zmq/include"
 EXTRA_LIB_DIR = "/opt/zmq/lib"
 EXTRA_INC, EXTRA_LIB = ['#{EXTRA_INC_DIR}',"-L#{EXTRA_LIB_DIR} -lzmq"]
-GHC = "ghc #{GHC_PACKAGE_PATH.split.map{|p|"-package-db #{p}"}.join(' ')} -threaded"
+GHC = "ghc #{GHC_PACKAGE_PATH.split.map{|p|"-package-db #{p}"}.join(' ')} -hide-package monads-tf -threaded"
 
 # ~/.cabal/bin is important since the latest version of cabal-install will go there
 _path = []

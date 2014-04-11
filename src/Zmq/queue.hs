@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Zmq.Queue (defaultMain) where
+module Zmq.Queue (defmain) where
 
 import Control.Lens ((^.))
 import Control.Monad (forM_,forever)

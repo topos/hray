@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Actor.Warp (defaultMain) where
+module Actor.Eg.Warp (defmain) where
 
 import Network.Wai (Application,responseBuilder)
 import Network.HTTP.Types (status200)
@@ -19,4 +19,3 @@ app _ = return $ responseBuilder status200
 
 run :: IO ()
 run = Warp.run 8080 app
-
