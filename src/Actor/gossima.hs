@@ -23,9 +23,9 @@ server rPing = do
 client :: SendPort Ping -> Process ()
 client sPing = sendChan sPing Ping
 
--- main = defaultMain
-defaultMain :: IO ()
-defaultMain = do
+-- main = run
+run :: IO ()
+run = do
   Right transport <- createTransport "127.0.0.1" "8080" defaultTCPParameters
   node <- newLocalNode transport initRemoteTable
   runProcess node start

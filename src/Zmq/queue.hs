@@ -41,7 +41,7 @@ server = do
       liftIO $ threadDelay (500*1000)
       send responder [] "World"       
 
-defaultMain args = do
+run args = do
   args <- args
   if not (args^.help) then
     case args^.role of

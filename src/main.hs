@@ -8,5 +8,5 @@ import qualified Actor.Cluster as C
 import Arg (args,help,printUsage,role)
 
 main :: IO ()
-main = C.defaultMain args
+main = C.run args
 -- main = W.defaultMain

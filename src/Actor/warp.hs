@@ -17,6 +17,6 @@ app _ = return $ responseBuilder status200
                  where body = C8.pack "Hi, There!"
                        bodyLen = C8.length body
 
-defaultMain :: IO ()
-defaultMain = Warp.run 8080 app
+run :: IO ()
+run = Warp.run 8080 app
 
