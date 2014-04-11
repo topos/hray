@@ -51,20 +51,18 @@ namespace :cabal do
   desc "update each cabal in lib/cabal.list"
   task :update_list do
     Dir.chdir(LIB_DIR) do
-      puts "local [==|<] remote"
       list = File.open('cabal.list').read
       list.gsub!(/\s*\r\n?/, "\n")
       list.each_line do |l|
         unless l =~ /^\s*#/
-          #cab_name = cab.split('|').first.split('-').reverse.drop(1).reverse.join('-')
           cab_elems = l.split('|').first.split('-')
-          version, cabal = cab_elems.pop.strip, cab_elems.join('-')
+          version, cabal = cab_elems.pop.strip, cab_elems.map{|e|e.strip}.join('-')
           l = cabal_list(cabal)
           if l.last.first == cabal
             if l[-1].last == version
-              puts "#{cabal}-#{version} == #{l.last.first}-#{l.last.last}".green
+              puts "current: " + "#{l.last.first}-#{l.last.last}".green
             else
-              puts "#{cabal}-#{version} < #{l.last.first}-#{l.last.last}".yellow
+              puts "#{l.last.first}-#{l.last.last} | #{cabal}-#{version} (local version)".yellow
             end
           end
         end

@@ -32,14 +32,16 @@ namespace :zmq do
   end
 
   namespace :cabal do
+    directory OPT_DIR
+      
     desc "install zero-mq-4 cabal package"
-    task :install do
+    task :install => OPT_DIR do
       Dir.chdir(OPT_DIR) do
         sh "git clone https://github.com/twittner/zeromq-haskell.git" unless Dir.exists?('zeromq-haskell')
       end
       Dir.chdir(PROJ_DIR) do
         sh "cabal sandbox add-source #{OPT_DIR}/zeromq-haskell"
-        sh "cabal install --dependencies-only" # install it into sandbox
+        sh "cd opt/zeromq-haskell && cabal install --dependencies-only" # install it into sandbox
       end
     end
   end
